@@ -4,163 +4,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TitipYuk - Belanja Mudah</title>
+<title>TitipYuk - Belanja Jadi Mudah</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0b0b0b;color:#fff}
-header{padding:18px 6%;display:flex;justify-content:space-between;align-items:center;background:#111;border-bottom:1px solid #292929;position:sticky;top:0;z-index:5}
-.logo{font-size:25px;font-weight:bold;color:#ff9f24}
-.logo span{color:white}
-button{cursor:pointer;border:0}
-nav button{background:none;color:white;margin-left:14px;font-size:14px}
-.hero{padding:65px 7%;background:linear-gradient(120deg,#171717,#292019);text-align:center}
-.hero h1{font-size:38px;margin-bottom:15px}
-.hero h1 span{color:#ff9f24}
-.hero p{color:#bbb;line-height:1.7}
-.primary{background:#ff9f24;color:#111;padding:13px 22px;border-radius:8px;font-weight:bold;margin-top:22px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#fff}
+header{background:#111;padding:18px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #292929;position:sticky;top:0;z-index:5}
+.logo{font-size:25px;font-weight:bold;color:#fff}
+.logo span{color:#d6a84b}
+button{cursor:pointer;border:0;border-radius:8px;padding:12px 17px;font-weight:bold}
+.primary{background:#d6a84b;color:#111}
+.secondary{background:#252525;color:white}
+.hero{padding:65px 7%;background:linear-gradient(120deg,#171717,#080808);text-align:center}
+.hero h1{font-size:38px;margin:0 0 12px}
+.hero p{color:#bbb;line-height:1.6}
 section{padding:35px 6%}
-.heading{font-size:24px;margin-bottom:20px}
-.search{width:100%;padding:14px;background:#191919;border:1px solid #333;border-radius:9px;color:white;margin-bottom:18px}
-.categories{display:flex;gap:9px;overflow:auto;margin-bottom:22px}
-.categories button{background:#222;color:#ddd;padding:10px 16px;border-radius:20px;white-space:nowrap}
-.categories button.active{background:#ff9f24;color:#111}
-.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.product{background:#171717;border:1px solid #292929;border-radius:12px;overflow:hidden}
-.product img{width:100%;height:145px;object-fit:cover;background:#292929}
-.product-info{padding:13px}
-.product h3{font-size:15px;margin-bottom:8px}
-.price{color:#ffad39;font-weight:bold}
-.product p{font-size:12px;color:#aaa;margin:8px 0}
-.add{width:100%;padding:10px;background:#ff9f24;color:#111;border-radius:7px;font-weight:bold;margin-top:9px}
-.cart-box{background:#171717;padding:18px;border-radius:12px;border:1px solid #333}
-.cart-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #333;font-size:14px}
-.cart-item button{background:#333;color:white;padding:4px 9px;border-radius:5px}
-.total{display:flex;justify-content:space-between;margin-top:18px;font-weight:bold}
-input,textarea{width:100%;padding:13px;margin:7px 0 13px;background:#111;border:1px solid #444;color:white;border-radius:7px}
-label{font-size:13px;color:#ccc}
-.checkout{width:100%;padding:14px;background:#ff9f24;color:#111;border-radius:8px;font-weight:bold}
-.empty{color:#999;padding:15px 0}
-footer{text-align:center;padding:28px;background:#111;color:#888;font-size:13px;line-height:2}
-@media(min-width:700px){.products{grid-template-columns:repeat(4,1fr)}.hero h1{font-size:52px}}
+.section-title{font-size:25px;margin-bottom:20px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:16px}
+.product{background:#171717;border:1px solid #292929;border-radius:12px;padding:14px}
+.product .pic{height:125px;background:#242424;border-radius:9px;display:grid;place-items:center;font-size:48px}
+.product h3{margin:12px 0 6px}
+.price{color:#d6a84b;font-weight:bold;margin:8px 0 13px}
+.product button{width:100%}
+.cartbox{background:#171717;border:1px solid #292929;border-radius:12px;padding:18px}
+.cart-item{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #333}
+.cart-item button{padding:5px 9px}
+input,select,textarea{width:100%;padding:12px;margin:6px 0 14px;border:1px solid #444;border-radius:7px;background:#171717;color:white}
+label{font-size:14px;color:#ddd}
+#checkout{display:none;background:#141414;border:1px solid #333;border-radius:12px;padding:20px;margin-top:20px}
+#checkout h3{margin-top:0}
+.note{color:#aaa;font-size:13px;line-height:1.5}
+footer{text-align:center;padding:28px;background:#111;color:#888;margin-top:30px}
+.hidden{display:none}
 </style>
 </head>
 <body>
 
 <header>
- <div class="logo">Titip<span>Yuk.</span></div>
- <nav>
-  <button onclick="location.href='#beranda'">Beranda</button>
-  <button onclick="location.href='#produk'">Produk</button>
-  <button onclick="location.href='#keranjang'">Keranjang 🛒 <b id="count">0</b></button>
- </nav>
+  <div class="logo">Titip<span>Yuk.</span></div>
+  <button class="secondary" onclick="document.getElementById('keranjang').scrollIntoView({behavior:'smooth'})">🛒 Keranjang (<span id="jumlah">0</span>)</button>
 </header>
 
-<div class="hero" id="beranda">
- <h1>Belanja Mudah,<br><span>TitipYuk!</span></h1>
- <p>Temukan produk pilihan dengan cara belanja yang mudah,<br>praktis, dan nyaman.</p>
- <button class="primary" onclick="location.href='#produk'">Mulai Belanja →</button>
+<div class="hero">
+  <h1>Belanja Jadi Lebih Mudah</h1>
+  <p>Temukan barang pilihanmu dan pesan dengan mudah bersama TitipYuk.</p>
+  <button class="primary" onclick="document.getElementById('produk').scrollIntoView({behavior:'smooth'})">Mulai Belanja</button>
 </div>
 
 <section id="produk">
- <h2 class="heading">Temukan Produk</h2>
- <input class="search" id="search" placeholder="Cari produk yang kamu inginkan..." oninput="render()">
- <div class="categories">
-  <button class="active" onclick="category('Semua',this)">Semua</button>
-  <button onclick="category('Fashion',this)">Fashion</button>
-  <button onclick="category('Elektronik',this)">Elektronik</button>
-  <button onclick="category('Aksesoris',this)">Aksesoris</button>
- </div>
- <div class="products" id="products"></div>
+  <h2 class="section-title">Produk Pilihan</h2>
+  <div class="products" id="daftarProduk"></div>
 </section>
 
 <section id="keranjang">
- <h2 class="heading">Keranjang Belanja 🛒</h2>
- <div class="cart-box">
-  <div id="cart"><p class="empty">Keranjang kamu masih kosong.</p></div>
-  <div class="total"><span>Total</span><span id="total">Rp0</span></div>
- </div>
-</section>
+  <h2 class="section-title">Keranjang Belanja</h2>
+  <div class="cartbox">
+    <div id="isiKeranjang">Keranjang masih kosong.</div>
+    <h3>Total: <span id="total">Rp0</span></h3>
+    <button class="primary" onclick="bukaCheckout()">Lanjutkan Pemesanan</button>
 
-<section id="pesan">
- <h2 class="heading">Data Pemesanan</h2>
- <div class="cart-box">
-  <label>Nama lengkap</label>
-  <input id="nama" placeholder="Masukkan nama kamu">
-  <label>Nomor WhatsApp</label>
-  <input id="wa" type="tel" placeholder="Contoh: 08xxxxxxxxxx">
-  <label>Alamat pengiriman</label>
-  <textarea id="alamat" rows="3" placeholder="Masukkan alamat lengkap"></textarea>
-  <button class="checkout" onclick="order()">Kirim Pesanan</button>
-  <p style="color:#999;font-size:12px;margin-top:12px">Pesanan akan disiapkan setelah detailnya dikonfirmasi.</p>
- </div>
+    <div id="checkout">
+      <h3>Data Pemesanan</h3>
+      <p class="note">Isi data berikut setelah kamu siap memesan.</p>
+
+      <label>Nama lengkap</label>
+      <input id="nama" placeholder="Masukkan nama lengkap">
+
+      <label>Nomor WhatsApp</label>
+      <input id="hp" type="tel" placeholder="Contoh: 08xxxxxxxxxx">
+
+      <label>Provinsi</label>
+      <select id="provinsi"><option value="">Memuat provinsi...</option></select>
+
+      <label>Kabupaten / Kota</label>
+      <select id="kota" disabled><option value="">Pilih provinsi dahulu</option></select>
+
+      <label>Kecamatan</label>
+      <select id="kecamatan" disabled><option value="">Pilih kabupaten/kota dahulu</option></select>
+
+      <label>Desa / Kelurahan</label>
+      <select id="desa" disabled><option value="">Pilih kecamatan dahulu</option></select>
+
+      <label>Kode pos</label>
+      <input id="kodepos" inputmode="numeric" placeholder="Masukkan kode pos">
+
+      <label>Nama jalan, nomor rumah, RT/RW, patokan</label>
+      <textarea id="alamat" rows="3" placeholder="Tulis alamat lengkap"></textarea>
+
+      <label>Catatan pesanan (opsional)</label>
+      <textarea id="catatan" rows="2" placeholder="Catatan tambahan"></textarea>
+
+      <button class="primary" style="width:100%" onclick="kirimPesanan()">Pesan Sekarang via WhatsApp</button>
+    </div>
+  </div>
 </section>
 
 <footer>
- <b style="color:#ff9f24;font-size:20px">TitipYuk.</b>
- <p>Belanja mudah, praktis, dan nyaman.</p>
- <p>© 2026 TitipYuk. Semua hak dilindungi.</p>
+  <h3>TitipYuk.</h3>
+  <p>Belanja mudah, nyaman, dan praktis.</p>
+  <p>© 2026 TitipYuk. Semua hak dilindungi.</p>
 </footer>
 
 <script>
-const data=[
- {id:1,name:"Kaos Basic",price:75000,cat:"Fashion",img:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500"},
- {id:2,name:"Hoodie Casual",price:145000,cat:"Fashion",img:"https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500"},
- {id:3,name:"Headphone",price:120000,cat:"Elektronik",img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"},
- {id:4,name:"Jam Tangan",price:95000,cat:"Aksesoris",img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500"},
- {id:5,name:"Tas Casual",price:110000,cat:"Fashion",img:"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500"},
- {id:6,name:"Kacamata",price:65000,cat:"Aksesoris",img:"https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500"}
-];
-let cart=[];
-let selected="Semua";
-const money=n=>"Rp"+n.toLocaleString("id-ID");
+const NOMOR_ADMIN = "6285769716313";
 
-function render(){
- const q=document.getElementById("search").value.toLowerCase();
- document.getElementById("products").innerHTML=data.filter(p=>(selected==="Semua"||p.cat===selected)&&p.name.toLowerCase().includes(q)).map(p=>`
+const produk = [
+ {id:1,nama:"Produk 1",harga:25000,emoji:"🎁"},
+ {id:2,nama:"Produk 2",harga:35000,emoji:"🛍️"},
+ {id:3,nama:"Produk 3",harga:45000,emoji:"🎧"},
+ {id:4,nama:"Produk 4",harga:55000,emoji:"⌚"}
+];
+
+let keranjang = [];
+
+function rupiah(angka){
+ return new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(angka);
+}
+
+function tampilkanProduk(){
+ document.getElementById("daftarProduk").innerHTML=produk.map(p=>`
  <div class="product">
- <img src="${p.img}" alt="${p.name}">
- <div class="product-info">
- <h3>${p.name}</h3>
- <div class="price">${money(p.price)}</div>
- <p>${p.cat}</p>
- <button class="add" onclick="add(${p.id})">+ Tambah</button>
- </div></div>`).join("")||"<p>Produk tidak ditemukan.</p>";
+  <div class="pic">${p.emoji}</div>
+  <h3>${p.nama}</h3>
+  <div class="price">${rupiah(p.harga)}</div>
+  <button class="primary" onclick="tambah(${p.id})">Tambah ke Keranjang</button>
+ </div>`).join("");
 }
-function category(c,el){
- selected=c;
- document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
- el.classList.add("active");
- render();
+
+function tambah(id){
+ const p=produk.find(x=>x.id===id);
+ const ada=keranjang.find(x=>x.id===id);
+ if(ada) ada.jumlah++;
+ else keranjang.push({...p,jumlah:1});
+ tampilkanKeranjang();
 }
-function add(id){
- let item=cart.find(x=>x.id===id);
- if(item)item.qty++;
- else cart.push({...data.find(x=>x.id===id),qty:1});
- update();
+
+function ubahJumlah(id,angka){
+ const p=keranjang.find(x=>x.id===id);
+ if(!p)return;
+ p.jumlah+=angka;
+ if(p.jumlah<=0)keranjang=keranjang.filter(x=>x.id!==id);
+ tampilkanKeranjang();
 }
-function remove(id){
- cart=cart.filter(x=>x.id!==id);
- update();
-}
-function update(){
- document.getElementById("count").innerText=cart.reduce((s,x)=>s+x.qty,0);
- document.getElementById("cart").innerHTML=cart.length?cart.map(x=>`
+
+function tampilkanKeranjang(){
+ let jumlah=keranjang.reduce((a,b)=>a+b.jumlah,0);
+ let total=keranjang.reduce((a,b)=>a+b.harga*b.jumlah,0);
+ document.getElementById("jumlah").textContent=jumlah;
+ document.getElementById("total").textContent=rupiah(total);
+
+ if(!keranjang.length){
+  document.getElementById("isiKeranjang").textContent="Keranjang masih kosong.";
+  document.getElementById("checkout").style.display="none";
+  return;
+ }
+
+ document.getElementById("isiKeranjang").innerHTML=keranjang.map(p=>`
  <div class="cart-item">
- <span>${x.name} × ${x.qty}<br>${money(x.price*x.qty)}</span>
- <button onclick="remove(${x.id})">Hapus</button>
- </div>`).join(""):'<p class="empty">Keranjang kamu masih kosong.</p>';
- document.getElementById("total").innerText=money(cart.reduce((s,x)=>s+x.price*x.qty,0));
+  <div>${p.nama}<br><span class="note">${rupiah(p.harga)} × ${p.jumlah}</span></div>
+  <div>
+   <button class="secondary" onclick="ubahJumlah(${p.id},-1)">−</button>
+   <button class="secondary" onclick="ubahJumlah(${p.id},1)">+</button>
+  </div>
+ </div>`).join("");
 }
-function order(){
+
+function bukaCheckout(){
+ if(!keranjang.length){alert("Keranjang masih kosong.");return;}
+ const el=document.getElementById("checkout");
+ el.style.display="block";
+ el.scrollIntoView({behavior:"smooth"});
+}
+
+async function isiPilihan(url,elemen,teks){
+ elemen.innerHTML=`<option value="">Memuat ${teks}...</option>`;
+ elemen.disabled=true;
+ try{
+  const hasil=await fetch(url);
+  if(!hasil.ok)throw new Error("Gagal");
+  const data=await hasil.json();
+  elemen.innerHTML=`<option value="">Pilih ${teks}</option>`+
+   data.map(x=>`<option value="${x.name}">${x.name}</option>`).join("");
+  elemen.disabled=false;
+  return data;
+ }catch(e){
+  elemen.innerHTML=`<option value="">Gagal memuat. Coba muat ulang halaman.</option>`;
+  return [];
+ }
+}
+
+const provinsi=document.getElementById("provinsi");
+const kota=document.getElementById("kota");
+const kecamatan=document.getElementById("kecamatan");
+const desa=document.getElementById("desa");
+
+let dataProvinsi=[];
+
+async function mulaiAlamat(){
+ dataProvinsi=await isiPilihan(
+  "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json",
+  provinsi,"provinsi"
+ );
+}
+
+provinsi.addEventListener("change",async()=>{
+ const p=dataProvinsi.find(x=>x.name===provinsi.value);
+ kecamatan.innerHTML='<option value="">Pilih kabupaten/kota dahulu</option>';
+ desa.innerHTML='<option value="">Pilih kecamatan dahulu</option>';
+ kecamatan.disabled=true;desa.disabled=true;
+ if(!p)return;
+ const data=await isiPilihan(
+  `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${p.id}.json`,
+  kota,"kabupaten/kota"
+ );
+});
+
+kota.addEventListener("change",async()=>{
+ const p=dataProvinsi.find(x=>x.name===provinsi.value);
+ if(!p)return;
+ const daftar=await fetch(
+  `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${p.id}.json`
+ ).then(r=>r.json()).catch(()=>[]);
+ const k=daftar.find(x=>x.name===kota.value);
+ desa.innerHTML='<option value="">Pilih kecamatan dahulu</option>';
+ desa.disabled=true;
+ if(!k)return;
+ await isiPilihan(
+  `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${k.id}.json`,
+  kecamatan,"kecamatan"
+ );
+});
+
+kecamatan.addEventListener("change",async()=>{
+ const p=dataProvinsi.find(x=>x.name===provinsi.value);
+ if(!p)return;
+ const daftarKota=await fetch(
+  `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${p.id}.json`
+ ).then(r=>r.json()).catch(()=>[]);
+ const k=daftarKota.find(x=>x.name===kota.value);
+ if(!k)return;
+ const daftarKecamatan=await fetch(
+  `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${k.id}.json`
+ ).then(r=>r.json()).catch(()=>[]);
+ const d=daftarKecamatan.find(x=>x.name===kecamatan.value);
+ if(!d)return;
+ await isiPilihan(
+  `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${d.id}.json`,
+  desa,"desa/kelurahan"
+ );
+});
+
+function kirimPesanan(){
+ if(!keranjang.length){alert("Keranjang masih kosong.");return;}
+
  const nama=document.getElementById("nama").value.trim();
- const wa=document.getElementById("wa").value.trim();
+ const hp=document.getElementById("hp").value.trim();
+ const kodepos=document.getElementById("kodepos").value.trim();
  const alamat=document.getElementById("alamat").value.trim();
- if(!cart.length)return alert("Keranjang masih kosong!");
- if(!nama||!wa||!alamat)return alert("Lengkapi data pemesanan terlebih dahulu.");
- let detail=cart.map(x=>x.name+" x"+x.qty+" = "+money(x.price*x.qty)).join("\n");
- alert("Pesanan berhasil dibuat di demo ini!\n\n"+nama+"\n"+detail+"\nTotal: "+document.getElementById("total").innerText+"\n\nIni belum terkirim ke admin. Hubungkan WhatsApp dan database untuk menerima pesanan sungguhan.");
+
+ if(!nama||!hp||!provinsi.value||!kota.value||!kecamatan.value||!desa.value||!kodepos||!alamat){
+  alert("Mohon lengkapi semua data pemesanan dan alamat.");
+  return;
+ }
+
+ const total=keranjang.reduce((a,b)=>a+b.harga*b.jumlah,0);
+ const daftar=keranjang.map(p=>`${p.nama} x${p.jumlah} = ${rupiah(p.harga*p.jumlah)}`).join("\n");
+
+ const pesan=`PESANAN BARU TITIPYUK
+
+Nama: ${nama}
+WhatsApp: ${hp}
+
+ALAMAT PENGIRIMAN:
+Provinsi: ${provinsi.value}
+Kabupaten/Kota: ${kota.value}
+Kecamatan: ${kecamatan.value}
+Desa/Kelurahan: ${desa.value}
+Kode Pos: ${kodepos}
+Alamat lengkap: ${alamat}
+
+PESANAN:
+${daftar}
+
+Total: ${rupiah(total)}
+Catatan: ${document.getElementById("catatan").value || "-"}`;
+
+ window.open(`https://wa.me/${NOMOR_ADMIN}?text=${encodeURIComponent(pesan)}`,"_blank");
 }
-render();
+
+tampilkanProduk();
+tampilkanKeranjang();
+mulaiAlamat();
 </script>
 </body>
 </html>
