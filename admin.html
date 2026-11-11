@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin TitipYuk</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0b;color:white;font-family:Arial,sans-serif}
+header{padding:18px;background:#151515;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:23px;font-weight:bold}.logo span{color:#ff9f24}
+main{padding:20px;max-width:1000px;margin:auto}
+.card{background:#171717;border:1px solid #333;border-radius:12px;padding:18px;margin-bottom:18px}
+h2{font-size:20px}
+input,textarea,select{width:100%;padding:12px;margin:7px 0 14px;background:#222;color:white;border:1px solid #444;border-radius:7px}
+button{padding:11px 15px;border:0;border-radius:7px;font-weight:bold;cursor:pointer;margin:3px}
+.primary{background:#ff9f24;color:#111}
+.gray{background:#333;color:white}
+.red{background:#a83232;color:white}
+.green{background:#176c3b;color:white}
+.hidden{display:none}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1}
+.item{border-bottom:1px solid #333;padding:14px 0}
+.small{color:#aaa;font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">Titip<span>Yuk.</span> Admin</div>
+ <button class="gray hidden" id="logout" onclick="keluar()">Keluar</button>
+</header>
+
+<main>
+ <section id="login" class="card">
+  <h2>Login Admin</h2>
+  <p class="small">Masuk ke dashboard pengelolaan toko.</p>
+  <label>Username</label>
+  <input id="username" placeholder="Username">
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Password">
+  <button class="primary" onclick="masuk()">Masuk Dashboard</button>
+  <p id="pesanLogin" class="small"></p>
+ </section>
+
+ <section id="dashboard" class="hidden">
+  <div class="card">
+   <h2>Dashboard TitipYuk</h2>
+   <p>Selamat datang, Admin!</p>
+   <div class="row">
+    <div><h3 id="jumlahProduk">0</h3><span class="small">Jumlah Produk</span></div>
+    <div><h3 id="jumlahPesanan">0</h3><span class="small">Jumlah Pesanan</span></div>
+   </div>
+  </div>
+
+  <div class="card">
+   <h2>Pengaturan Toko</h2>
+   <label>Nama toko</label>
+   <input id="namaToko" placeholder="TitipYuk">
+   <label>Deskripsi toko</label>
+   <textarea id="deskripsi" placeholder="Deskripsi toko"></textarea>
+   <button class="primary" onclick="simpanToko()">Simpan Pengaturan</button>
+  </div>
+
+  <div class="card">
+   <h2 id="judulForm">Tambah Produk</h2>
+   <input type="hidden" id="editId">
+   <label>Nama produk</label>
+   <input id="namaProduk" placeholder="Nama produk">
+   <label>Harga produk</label>
+   <input id="hargaProduk" type="number" placeholder="Contoh: 50000">
+   <label>Stok</label>
+   <input id="stokProduk" type="number" placeholder="Jumlah stok">
+   <label>Alamat gambar produk</label>
+   <input id="fotoProduk" placeholder="https://alamat-gambar.jpg">
+   <button class="primary" onclick="simpanProduk()">Simpan Produk</button>
+   <button class="gray" onclick="resetForm()">Batal</button>
+  </div>
+
+  <div class="card">
+   <h2>Daftar Produk</h2>
+   <div id="daftarProduk"></div>
+  </div>
+
+  <div class="card">
+   <h2>Pesanan Customer</h2>
+   <div id="daftarPesanan"></div>
+  </div>
+
+  <div class="card">
+   <h2>Pengaturan QRIS</h2>
+   <p class="small">Masukkan alamat gambar QRIS toko untuk persiapan halaman pembayaran.</p>
+   <label>Alamat gambar QRIS</label>
+   <input id="fotoQris" placeholder="Alamat gambar QRIS">
+   <button class="primary" onclick="simpanQris()">Simpan QRIS</button>
+  </div>
+ </section>
+</main>
+
+<script>
+const USER="admin";
+const PASS="titipyukadmin";
+
+let produk=JSON.parse(localStorage.getItem("titipyuk_products")||"[]");
+let pesanan=JSON.parse(localStorage.getItem("titipyuk_orders")||"[]");
+
+function masuk(){
+ if(document.getElementById("username").value===USER &&
+ document.getElementById("password").value===PASS){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("logout").classList.remove("hidden");
+  muatDashboard();
+ }else{
+  document.getElementById("pesanLogin").textContent="Username atau password salah.";
+ }
+}
+
+function keluar(){
+ document.getElementById("dashboard").classList.add("hidden");
+ document.getElementById("login").classList.remove("hidden");
+ document.getElementById("logout").classList.add("hidden");
+ document.getElementById("password").value="";
+}
+
+function simpanProduk(){
+ const nama=document.getElementById("namaProduk").value.trim();
+ const harga=Number(document.getElementById("hargaProduk").value);
+ const stok=Number(document.getElementById("stokProduk").value);
+ const foto=document.getElementById("fotoProduk").value.trim();
+ const id=document.getElementById("editId").value;
+
+ if(!nama||harga<=0||stok<0){
+  alert("Lengkapi nama, harga, dan stok dengan benar.");
+  return;
+ }
+
+ if(id){
+  produk=produk.map(p=>p.id==id?{...p,nama,harga,stok,foto}:p);
+ }else{
+  produk.push({id:Date.now(),nama,harga,stok,foto});
+ }
+
+ simpanData();
+ resetForm();
+ muatDashboard();
+ alert("Produk berhasil disimpan.");
+}
+
+function editProduk(id){
+ const p=produk.find(x=>x.id===id);
+ if(!p)return;
+ document.getElementById("editId").value=p.id;
+ document.getElementById("namaProduk").value=p.nama;
+ document.getElementById("hargaProduk").value=p.harga;
+ document.getElementById("stokProduk").value=p.stok;
+ document.getElementById("fotoProduk").value=p.foto||"";
+ document.getElementById("judulForm").textContent="Edit Produk";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function hapusProduk(id){
+ if(!confirm("Yakin ingin menghapus produk ini?"))return;
+ produk=produk.filter(p=>p.id!==id);
+ simpanData();
+ muatDashboard();
+}
+
+function resetForm(){
+ ["editId","namaProduk","hargaProduk","stokProduk","fotoProduk"].forEach(id=>document.getElementById(id).value="");
+ document.getElementById("judulForm").textContent="Tambah Produk";
+}
+
+function simpanData(){
+ localStorage.setItem("titipyuk_products",JSON.stringify(produk));
+ localStorage.setItem("titipyuk_orders",JSON.stringify(pesanan));
+}
+
+function muatDashboard(){
+ document.getElementById("jumlahProduk").textContent=produk.length;
+ document.getElementById("jumlahPesanan").textContent=pesanan.length;
+
+ document.getElementById("daftarProduk").innerHTML=produk.length?produk.map(p=>`
+ <div class="item">
+ <b>${aman(p.nama)}</b>
+ <p class="small">Harga: Rp${Number(p.harga).toLocaleString("id-ID")} | Stok: ${p.stok}</p>
+ ${p.foto?`<img src="${aman(p.foto)}" width="85" alt="Foto produk">`:""}
+ <br>
+ <button class="primary" onclick="editProduk(${p.id})">Edit</button>
+ <button class="red" onclick="hapusProduk(${p.id})">Hapus</button>
+ </div>`).join(""):"<p class='small'>Belum ada produk.</p>";
+
+ document.getElementById("daftarPesanan").innerHTML=pesanan.length?pesanan.map((p,i)=>`
+ <div class="item">
+ <b>${aman(p.nama||"Customer")}</b>
+ <p class="small">Total: Rp${Number(p.total||0).toLocaleString("id-ID")}</p>
+ <p>Status: <b>${aman(p.status||"Menunggu")}</b></p>
+ <select onchange="ubahStatus(${i},this.value)">
+ <option ${p.status==="Menunggu"?"selected":""}>Menunggu</option>
+ <option ${p.status==="Berhasil"?"selected":""}>Berhasil</option>
+ <option ${p.status==="Ditolak"?"selected":""}>Ditolak</option>
+ </select>
+ </div>`).join(""):"<p class='small'>Belum ada pesanan masuk.</p>";
+
+ document.getElementById("namaToko").value=localStorage.getItem("titipyuk_nama")||"TitipYuk";
+ document.getElementById("deskripsi").value=localStorage.getItem("titipyuk_deskripsi")||"";
+ document.getElementById("fotoQris").value=localStorage.getItem("titipyuk_qris")||"";
+}
+
+function ubahStatus(i,status){
+ pesanan[i].status=status;
+ simpanData();
+ alert("Status pesanan diperbarui di perangkat ini.");
+ muatDashboard();
+}
+
+function simpanToko(){
+ localStorage.setItem("titipyuk_nama",document.getElementById("namaToko").value);
+ localStorage.setItem("titipyuk_deskripsi",document.getElementById("deskripsi").value);
+ alert("Pengaturan toko tersimpan di perangkat ini.");
+}
+
+function simpanQris(){
+ localStorage.setItem("titipyuk_qris",document.getElementById("fotoQris").value);
+ alert("Alamat QRIS tersimpan di perangkat ini.");
+}
+
+function aman(teks){
+ return String(teks).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+</script>
+</body>
+</html>
